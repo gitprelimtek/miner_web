@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link href="/static/css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css"
+   integrity="sha512-07I2e+7D8p6he1SIM+1twR5TIrhUQn9+I6yjqD53JQjFiMf8EtC93ty0/5vJTZGF8aAocvHYNEDJajGdNx1IsQ=="
+   crossorigin=""/>
+    <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+     <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"
+   integrity="sha512-A7vV8IFfih/D732iSSKi20u/ooOfj/AGehOKq0f4vLT1Zr2Y+RX7C+w8A1gaSasGtRUZpF/NZgzSAu4/Gc41Lg=="
+   crossorigin=""></script>
+    <script type="text/javascript">
+      $(document).ready(function() {
+
+        $("#generate-string").click(function(e) {
+          $('#lcnTb').find("tr:gt(0)").remove();
+          $.post("/generator", {"coord_str": $("input[name='coord_str']").val(), "dist_str": $("input[name='dist_str']").val() })
+           .done(function(string) {
+            //$("#the-string").show();
+            //$("#the-string input").val(string);
+
+
+
+            var trHTML = '';
+             data=$.parseJSON(string);
+
+
+            $.each(data, function (i,item) {
+              trHTML += '<tr><td>'+item.sentiment+ '</td><td>' + item.text + '</td><td>' + new Date(item.createdAt) + '</td></tr>';
+            });
+
+            $('#lcnTb').append(trHTML);
+
+            //$.parse("["+$("input[name='coord_str']").val()+"]")
+
+             var mymap = L.map('mapid').setView([51,0], 13);
+
+
+          });
+          e.preventDefault();
+        });
+
+
+
+      });
+    </script>
+  </head>
+  <body>
+
+    <div id="the-string">
+      <label for="coordtxt">Coordinates</label>
+      <input type="text" value="-70, 40" id="coordtxt" name="coord_str"/>
+      <label for="disttxt">Distance (km)</label>
+      <input type="text" value="10" id="disttxt" name="dist_str"/>
+    <button id="generate-string">Search!</button>
+      </div>
+    <div id="resdiv">
+
+        <table id="lcnTb" border="1"><th>Sentiment</th><th>Text</th><th>Date</th></table>
+    </div>
+    <div id="resdiv2"></div>
+    <div id="mapid"></div>
+  </body>
+</html>
